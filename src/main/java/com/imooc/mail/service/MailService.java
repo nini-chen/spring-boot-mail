@@ -1,4 +1,4 @@
-package com.imooc.mail;
+package com.imooc.mail.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class MailService {
@@ -36,6 +36,7 @@ public class MailService {
         mailMessage.setText(context);//邮件内容
         mailSender.send(mailMessage);//发送
     }
+
      public void sendHtmlMail(String to,String subject,String context) throws Exception {
          MimeMessage mimeMessage = mailSender.createMimeMessage();
          MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage,true);
@@ -54,7 +55,7 @@ public class MailService {
      * @param file
      * @throws MessagingException
      */
-    public void sendFileMail(String to, String subject, String context, HashMap file) throws MessagingException {
+    public void sendFileMail(String to, String subject, String context, Map<Object,Object> file) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage,true);
 
