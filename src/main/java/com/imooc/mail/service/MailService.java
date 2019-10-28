@@ -1,5 +1,6 @@
 package com.imooc.mail.service;
 
+import com.imooc.mail.pojo.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -7,11 +8,14 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 @Service
 public class MailService {
@@ -48,26 +52,34 @@ public class MailService {
      }
 
     /**
-     * 发送带附件的邮件
-     * @param to
-     * @param subject
-     * @param context
-     * @param file
+     *
+     * @param test
      * @throws MessagingException
      */
-    public void sendFileMail(String to, String subject, String context, Map<Object,Object> file) throws MessagingException {
+    public void sendFileMail(Test test, String syspath) throws MessagingException, IOException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage,true);
 
         // 添加多个附件
-        for(Object key:file.keySet()){
-            FileSystemResource resource = new FileSystemResource(file.get(key).toString());
-            messageHelper.addAttachment(resource.getFilename(),resource);
+        for(MultipartFile multipartFile:test.getMultipartFiles()){
+            File file = new File(syspath,multipartFile.getOriginalFilename());
+
+            if(!file.getParentFile().exists()){    //判断服务器当前路径文件夹是否存在
+                file.getParentFile().mkdirs();    //不存在则创建文件夹
+            }
+
+            BufferedOutputStream out=new BufferedOutputStream(new FileOutputStream(file));
+            out.write(multipartFile.getBytes());
+            out.flush();
+            out.close();
+            FileSystemResource resource = new FileSystemResource(file);
+            messageHelper.addAttachment(multipartFile.getOriginalFilename(),file);
         }
+
         messageHelper.setFrom(from);
-        messageHelper.setTo(to);
-        messageHelper.setSubject(subject);
-        messageHelper.setText(context,true);
+        messageHelper.setTo(test.getTo());
+        messageHelper.setSubject(test.getSubject());
+        messageHelper.setText(test.getContext());
         mailSender.send(mimeMessage);
     }
 

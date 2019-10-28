@@ -1,6 +1,5 @@
 package com.imooc.mail.service;
 
-import com.imooc.mail.MailService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -49,11 +49,11 @@ public class MailTest {
                 "</h1>" +
                 "</body>" +
                 "</html>";
-        HashMap<Object,String> file = new HashMap<Object, String>();
+        Map<Object,Object> file = new HashMap<Object, Object>();
         file.put(1,"/Users/cj/Documents/面试/面试题整理.docx");
         file.put(2,"/Users/cj/Documents/面试/模板.docx");
         try{
-            mailService.sendFileMail("1173171092@qq.com",subject,context,file);
+            //mailService.sendFileMail("1173171092@qq.com",subject,context,file);
         }catch (Exception e){
             e.printStackTrace();
         }
